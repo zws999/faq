@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>303 Services — FAQ Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050505;
+  --accent:#ff1f3d;
+  --glow:#ff304f;
+  --glass:rgba(255,31,61,0.06);
+  --glass2:rgba(255,255,255,0.03);
+  --border:rgba(255,31,61,0.25);
+  --text:#e8e8e8;
+  --muted:rgba(255,255,255,0.45);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── CANVAS ── */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── AMBIENT GRADIENTS ── */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ambient::before{
+  content:'';position:absolute;
+  width:900px;height:900px;
+  top:-200px;left:-200px;
+  background:radial-gradient(circle,rgba(255,31,61,0.12) 0%,transparent 70%);
+  animation:drift1 18s ease-in-out infinite alternate;
+}
+.ambient::after{
+  content:'';position:absolute;
+  width:700px;height:700px;
+  bottom:-150px;right:-150px;
+  background:radial-gradient(circle,rgba(255,48,79,0.10) 0%,transparent 70%);
+  animation:drift2 22s ease-in-out infinite alternate;
+}
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(120px,80px) scale(1.2)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-100px,-60px) scale(1.15)}}
+
+/* ── SCROLL BAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:1000;
+  width:calc(100% - 40px);max-width:900px;
+  background:rgba(5,5,5,0.55);
+  backdrop-filter:blur(24px) saturate(1.8);
+  border:1px solid var(--border);
+  border-radius:60px;
+  padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 0 30px rgba(255,31,61,0.12),0 8px 32px rgba(0,0,0,0.6);
+}
+.nav-logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;font-size:1.1rem;
+  color:#fff;
+  letter-spacing:2px;
+  text-decoration:none;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo .logo-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--glow),0 0 24px var(--glow);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 12px var(--glow),0 0 24px var(--glow)}50%{box-shadow:0 0 20px var(--glow),0 0 40px var(--glow),0 0 60px rgba(255,48,79,0.3)}}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-links a{
+  color:rgba(255,255,255,0.7);
+  text-decoration:none;
+  font-size:.85rem;font-weight:500;
+  letter-spacing:.5px;
+  padding:8px 18px;
+  border-radius:40px;
+  transition:all .3s ease;
+  position:relative;
+}
+.nav-links a:hover{
+  color:#fff;
+  background:rgba(255,31,61,0.12);
+  box-shadow:0 0 16px rgba(255,31,61,0.2);
+}
+.nav-links a.active{
+  color:#fff;
+  background:rgba(255,31,61,0.15);
+  border:1px solid rgba(255,31,61,0.4);
+  box-shadow:0 0 20px rgba(255,31,61,0.25);
+}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.mobile-menu{
+  display:none;
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 40px);max-width:900px;
+  background:rgba(5,5,5,0.92);
+  backdrop-filter:blur(24px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px;
+  z-index:999;
+  flex-direction:column;gap:8px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  color:rgba(255,255,255,0.8);
+  text-decoration:none;
+  font-size:.95rem;
+  padding:12px 16px;
+  border-radius:12px;
+  transition:.2s;
+  border:1px solid transparent;
+}
+.mobile-menu a:hover{background:rgba(255,31,61,0.1);border-color:var(--border);color:#fff}
+
+/* ── MAIN WRAPPER ── */
+main{position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:120px 20px 80px;
+  text-align:center;
+  position:relative;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,31,61,0.1);
+  border:1px solid rgba(255,31,61,0.35);
+  border-radius:40px;
+  padding:8px 20px;
+  font-size:.75rem;letter-spacing:2px;
+  color:var(--accent);font-weight:600;
+  text-transform:uppercase;
+  margin-bottom:32px;
+  box-shadow:0 0 20px rgba(255,31,61,0.15);
+}
+.hero-badge .blink{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  animation:blink 1.5s step-start infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(3rem,8vw,6.5rem);
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-1px;
+  margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 40%,var(--accent) 80%,#ff6b7a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 40px rgba(255,31,61,0.3));
+}
+.hero-sub{
+  font-size:clamp(1rem,2.5vw,1.25rem);
+  color:var(--muted);
+  font-weight:300;
+  letter-spacing:1px;
+  margin-bottom:48px;
+}
+.search-wrap{
+  position:relative;
+  width:100%;max-width:560px;
+  margin:0 auto;
+}
+.search-wrap::before{
+  content:'';position:absolute;inset:-1px;
+  border-radius:60px;
+  background:linear-gradient(135deg,var(--accent),transparent,var(--accent));
+  z-index:0;
+  animation:border-rotate 4s linear infinite;
+}
+@keyframes border-rotate{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(30deg) brightness(1.3)}}
+.search-inner{
+  position:relative;z-index:1;
+  display:flex;align-items:center;
+  background:rgba(10,10,10,0.9);
+  backdrop-filter:blur(20px);
+  border-radius:60px;
+  padding:6px 6px 6px 22px;
+  box-shadow:0 0 40px rgba(255,31,61,0.2),0 8px 32px rgba(0,0,0,0.5);
+}
+.search-inner svg{width:18px;height:18px;color:var(--accent);flex-shrink:0;margin-right:10px}
+.search-inner input{
+  flex:1;
+  background:transparent;
+  border:none;outline:none;
+  color:#fff;
+  font-size:.95rem;
+  font-family:'Inter',sans-serif;
+  letter-spacing:.3px;
+}
+.search-inner input::placeholder{color:rgba(255,255,255,0.3)}
+.search-btn{
+  background:linear-gradient(135deg,var(--accent),#c41530);
+  border:none;
+  border-radius:40px;
+  color:#fff;
+  font-family:'Orbitron',sans-serif;
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:1px;
+  padding:12px 24px;
+  cursor:pointer;
+  transition:all .3s;
+  box-shadow:0 0 20px rgba(255,31,61,0.4);
+  white-space:nowrap;
+}
+.search-btn:hover{box-shadow:0 0 30px rgba(255,31,61,0.6);transform:scale(1.04)}
+.hero-stats{
+  display:flex;gap:40px;margin-top:60px;
+  flex-wrap:wrap;justify-content:center;
+}
+.h-stat{text-align:center}
+.h-stat .val{
+  font-family:'Orbitron',sans-serif;
+  font-size:1.6rem;font-weight:700;
+  color:#fff;
+  text-shadow:0 0 20px rgba(255,31,61,0.5);
+}
+.h-stat .lbl{font-size:.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+
+/* ── SECTION SHARED ── */
+section{position:relative;z-index:1;padding:100px 20px}
+.container{max-width:880px;margin:0 auto}
+.section-label{
+  display:flex;align-items:center;gap:12px;
+  font-size:.7rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent);font-weight:700;
+  margin-bottom:16px;
+}
+.section-label::before{content:'';width:30px;height:1px;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.section-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:700;
+  margin-bottom:12px;
+  color:#fff;
+  line-height:1.2;
+}
+.section-desc{color:var(--muted);font-size:.95rem;line-height:1.7;margin-bottom:56px}
+
+/* ── FAQ ── */
+#faq{padding-top:60px}
+.faq-cats{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;
+}
+.faq-cat{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:40px;
+  padding:8px 20px;
+  font-size:.78rem;letter-spacing:.5px;
+  color:var(--muted);cursor:pointer;
+  transition:.3s;
+  font-weight:500;
+}
+.faq-cat:hover,.faq-cat.active{
+  background:rgba(255,31,61,0.12);
+  border-color:rgba(255,31,61,0.4);
+  color:#fff;
+  box-shadow:0 0 16px rgba(255,31,61,0.15);
+}
+.faq-no-results{
+  text-align:center;padding:60px 20px;
+  color:var(--muted);font-size:.95rem;
+  display:none;
+}
+.faq-item{
+  position:relative;
+  margin-bottom:12px;
+  border-radius:16px;
+  overflow:hidden;
+  transition:all .4s ease;
+}
+.faq-item::before{
+  content:'';
+  position:absolute;inset:0;border-radius:16px;
+  background:linear-gradient(135deg,rgba(255,31,61,0.08),transparent);
+  opacity:0;transition:.4s;
+}
+.faq-item:hover::before,.faq-item.open::before{opacity:1}
+.faq-card{
+  background:rgba(255,255,255,0.03);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;
+  overflow:hidden;
+  transition:all .4s ease;
+  position:relative;
+}
+.faq-card::after{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--accent),transparent);
+  opacity:0;transition:.4s;
+  border-radius:3px 0 0 3px;
+}
+.faq-item.open .faq-card{
+  border-color:rgba(255,31,61,0.3);
+  box-shadow:0 0 30px rgba(255,31,61,0.1),0 8px 32px rgba(0,0,0,0.4);
+}
+.faq-item.open .faq-card::after{opacity:1}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 24px;
+  cursor:pointer;
+  gap:16px;
+  user-select:none;
+}
+.faq-q-left{display:flex;align-items:center;gap:14px}
+.faq-icon{
+  width:36px;height:36px;flex-shrink:0;
+  border-radius:10px;
+  background:rgba(255,31,61,0.1);
+  border:1px solid rgba(255,31,61,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+  transition:.3s;
+}
+.faq-item.open .faq-icon{
+  background:rgba(255,31,61,0.2);
+  box-shadow:0 0 16px rgba(255,31,61,0.3);
+}
+.faq-q-text{
+  font-size:.95rem;font-weight:500;
+  color:rgba(255,255,255,0.85);
+  line-height:1.4;
+  transition:.3s;
+}
+.faq-item.open .faq-q-text,.faq-q:hover .faq-q-text{color:#fff}
+.faq-chevron{
+  width:28px;height:28px;flex-shrink:0;
+  border-radius:8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+}
+.faq-chevron svg{width:14px;height:14px;color:var(--muted);transition:.3s}
+.faq-item.open .faq-chevron{
+  background:rgba(255,31,61,0.15);
+  border-color:rgba(255,31,61,0.35);
+  transform:rotate(180deg);
+  box-shadow:0 0 12px rgba(255,31,61,0.2);
+}
+.faq-item.open .faq-chevron svg{color:var(--accent)}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .5s cubic-bezier(.4,0,.2,1);
+}
+.faq-a-inner{
+  padding:0 24px 22px 74px;
+  font-size:.875rem;line-height:1.8;
+  color:var(--muted);
+}
+.faq-a-inner a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(255,31,61,0.3);transition:.2s}
+.faq-a-inner a:hover{border-bottom-color:var(--accent);text-shadow:0 0 8px rgba(255,31,61,0.4)}
+
+/* ── TRUST ── */
+#trust{
+  padding:80px 20px;
+}
+.trust-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;
+  margin-top:56px;
+}
+.trust-card{
+  background:rgba(255,255,255,0.025);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:20px;
+  padding:32px 24px;
+  text-align:center;
+  transition:all .4s ease;
+  position:relative;
+  overflow:hidden;
+}
+.trust-card::before{
+  content:'';position:absolute;
+  top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(transparent,rgba(255,31,61,0.06),transparent 30%);
+  animation:spin 8s linear infinite;
+  opacity:0;transition:.4s;
+}
+.trust-card:hover::before{opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.trust-card:hover{
+  border-color:rgba(255,31,61,0.25);
+  box-shadow:0 0 30px rgba(255,31,61,0.1),0 8px 24px rgba(0,0,0,0.3);
+  transform:translateY(-4px);
+}
+.trust-ico{
+  width:56px;height:56px;
+  border-radius:16px;
+  background:rgba(255,31,61,0.1);
+  border:1px solid rgba(255,31,61,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  margin:0 auto 20px;
+  box-shadow:0 0 20px rgba(255,31,61,0.15);
+  position:relative;z-index:1;
+}
+.trust-card h3{
+  font-family:'Orbitron',sans-serif;
+  font-size:.85rem;font-weight:700;
+  letter-spacing:1px;
+  color:#fff;margin-bottom:10px;
+  position:relative;z-index:1;
+}
+.trust-card p{font-size:.8rem;color:var(--muted);line-height:1.6;position:relative;z-index:1}
+
+/* ── DIVIDER ── */
+.divider{
+  width:100%;max-width:800px;margin:0 auto;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  position:relative;
+}
+.divider::before{
+  content:'303';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--bg);
+  padding:0 20px;
+  font-family:'Orbitron',sans-serif;
+  font-size:.7rem;letter-spacing:4px;
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  background:rgba(5,5,5,0.95);
+  border-top:1px solid rgba(255,31,61,0.15);
+  padding:70px 20px 30px;
+  overflow:hidden;
+}
+footer::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  box-shadow:0 0 20px var(--accent);
+}
+footer::after{
+  content:'';position:absolute;
+  top:-150px;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse,rgba(255,31,61,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.footer-inner{
+  max-width:1000px;margin:0 auto;
+  display:grid;
+  grid-template-columns:1.5fr repeat(3,1fr);
+  gap:48px;
+  position:relative;z-index:1;
+}
+.footer-brand .brand-logo{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;
+}
+.footer-brand .brand-logo img{
+  width:40px;height:40px;border-radius:10px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 12px rgba(255,31,61,0.4));
+}
+.footer-brand .brand-logo span{
+  font-family:'Orbitron',sans-serif;
+  font-size:1.1rem;font-weight:900;
+  letter-spacing:2px;color:#fff;
+}
+.footer-brand p{
+  font-size:.8rem;color:var(--muted);
+  line-height:1.7;max-width:240px;
+}
+.footer-col h4{
+  font-family:'Orbitron',sans-serif;
+  font-size:.7rem;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--accent);margin-bottom:18px;
+  font-weight:700;
+}
+.footer-col a{
+  display:block;
+  font-size:.82rem;color:rgba(255,255,255,0.55);
+  text-decoration:none;
+  margin-bottom:10px;
+  transition:.2s;
+  letter-spacing:.3px;
+}
+.footer-col a:hover{color:#fff;text-shadow:0 0 8px rgba(255,31,61,0.4)}
+.footer-bottom{
+  max-width:1000px;margin:48px auto 0;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  position:relative;z-index:1;
+}
+.footer-bottom p{font-size:.75rem;color:rgba(255,255,255,0.25)}
+.footer-bottom .status{
+  display:flex;align-items:center;gap:8px;
+  font-size:.72rem;color:rgba(255,255,255,0.4);
+}
+.footer-bottom .status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#00ff88;
+  box-shadow:0 0 8px #00ff88;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── HIGHLIGHT EFFECT ── */
+.glow-line{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  margin:0 auto 80px;
+  max-width:200px;
+  box-shadow:0 0 10px var(--accent);
+}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero-stats{gap:24px}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:32px}
+  .footer-brand{grid-column:1/-1}
+  .faq-a-inner{padding-left:24px}
+}
+@media(max-width:500px){
+  .footer-inner{grid-template-columns:1fr}
+  .footer-brand{grid-column:auto}
+  .trust-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="ambient"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-dot"></div>
+    <span>303</span>
+  </a>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#faq" class="active">FAQ</a>
+    <a href="https://discord.gg/QqcqeN68eW" target="_blank">Discord</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#">Home</a>
+  <a href="#faq">FAQ</a>
+  <a href="https://discord.gg/QqcqeN68eW" target="_blank">Discord</a>
+</div>
+
+<main>
+<!-- ─── HERO ─── -->
+<section class="hero" id="home">
+  <div class="hero-badge"><span class="blink"></span>Support Center</div>
+  <h1 class="hero-title">FAQ Center</h1>
+  <p class="hero-sub">Find answers instantly — no waiting, no hassle.</p>
+  <div class="search-wrap">
+    <div class="search-inner">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search questions..." autocomplete="off" oninput="filterFAQ()"/>
+      <button class="search-btn">SEARCH</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="h-stat"><div class="val">24H</div><div class="lbl">Delivery</div></div>
+    <div class="h-stat"><div class="val">100%</div><div class="lbl">Digital</div></div>
+    <div class="h-stat"><div class="val">24/7</div><div class="lbl">Support</div></div>
+    <div class="h-stat"><div class="val">303</div><div class="lbl">Services</div></div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section id="faq">
+  <div class="container">
+    <div class="section-label">Frequently Asked</div>
+    <h2 class="section-title">Got Questions?<br/>We Have Answers.</h2>
+    <p class="section-desc">Everything you need to know about 303 Services — payments, delivery, support and more.</p>
+
+    <div class="faq-cats">
+      <div class="faq-cat active" onclick="filterCat(this,'all')">All</div>
+      <div class="faq-cat" onclick="filterCat(this,'payments')">Payments</div>
+      <div class="faq-cat" onclick="filterCat(this,'delivery')">Delivery</div>
+      <div class="faq-cat" onclick="filterCat(this,'account')">Account</div>
+      <div class="faq-cat" onclick="filterCat(this,'support')">Support</div>
+    </div>
+
+    <div id="faqList">
+
+      <div class="faq-item" data-cat="payments" data-q="what payment methods do you accept">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">💳</div>
+              <span class="faq-q-text">What payment methods do you accept?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            We accept the following payment methods:<br/><br/>
+            <strong style="color:#fff">• Paysafecard</strong> (Romania only)<br/>
+            <strong style="color:#fff">• PayPal Friends & Family</strong><br/>
+            <strong style="color:#fff">• Revolut</strong> (18+ only)<br/>
+            <strong style="color:#fff">• Bitcoin (BTC)</strong><br/>
+            <strong style="color:#fff">• Litecoin (LTC)</strong>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="payments" data-q="are there any fees on payments">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">💰</div>
+              <span class="faq-q-text">Are there any transaction fees?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Fees may apply depending on the payment method used. Our fee range is <strong style="color:#fff">1% – 10%</strong>. The exact fee will be communicated before you complete your purchase.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="payments" data-q="do you offer refunds refund policy">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">🔄</div>
+              <span class="faq-q-text">What is your refund policy?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            <strong style="color:var(--accent)">All purchases are final.</strong> We do not offer refunds under any circumstances once a transaction has been completed. Please make sure you are certain before placing an order. If you have any concerns, reach out to our staff via Discord before purchasing.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="delivery" data-q="how long does delivery take">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">⚡</div>
+              <span class="faq-q-text">How long does delivery take?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            All digital orders are delivered within <strong style="color:#fff">1 to 24 hours</strong> after payment confirmation. Most orders are processed much faster. You will be notified as soon as your order is ready.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="account" data-q="do i need an account to buy">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">👤</div>
+              <span class="faq-q-text">Do I need an account to purchase?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            It depends on the service. Some products require an account on the associated platform to be redeemed or used. This will always be clearly mentioned in the product description. When in doubt, contact us on Discord before purchasing.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="account" data-q="what is the minimum age to buy">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">🔞</div>
+              <span class="faq-q-text">Is there a minimum age requirement?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Yes. You must be at least <strong style="color:#fff">14 years old</strong> to purchase from 303 Services. By placing an order you confirm that you meet this age requirement.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="support" data-q="how do i contact support help">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">🎧</div>
+              <span class="faq-q-text">How do I contact support?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Our support team is available exclusively through Discord. You can reach us at: <a href="https://discord.gg/QqcqeN68eW" target="_blank">discord.gg/QqcqeN68eW</a>.<br/><br/>
+            Open a ticket or message staff directly and we'll get back to you as quickly as possible.
+          </div></div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-cat="support" data-q="how do i report an issue problem">
+        <div class="faq-card">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <div class="faq-q-left">
+              <div class="faq-icon">🚨</div>
+              <span class="faq-q-text">How do I report a problem or issue?</span>
+            </div>
+            <div class="faq-chevron"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            If you experience any issue with your order or our service, please contact our staff immediately via <a href="https://discord.gg/QqcqeN68eW" target="_blank">Discord</a>. Provide your order details and a clear description of the problem and we'll investigate promptly.
+          </div></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="faq-no-results" id="noResults">
+      <div style="font-size:2rem;margin-bottom:12px">🔍</div>
+      No questions found. Try a different search term or <a href="https://discord.gg/QqcqeN68eW" target="_blank" style="color:var(--accent)">ask us on Discord</a>.
+    </div>
+  </div>
+</section>
+
+<div style="padding:0 20px"><div class="divider"></div></div>
+
+<!-- ─── TRUST ─── -->
+<section id="trust">
+  <div class="container">
+    <div class="section-label">Why Choose Us</div>
+    <h2 class="section-title">Why Trust 303</h2>
+    <p class="section-desc">Built on reliability, speed, and premium service. Here's what sets us apart.</p>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="trust-ico">🛡️</div>
+        <h3>Trusted Services</h3>
+        <p>Verified digital products from a reliable reseller you can count on every time.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-ico">⚡</div>
+        <h3>Fast Delivery</h3>
+        <p>Orders fulfilled within 1–24 hours. No long waits, no frustration.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-ico">🎧</div>
+        <h3>Reliable Support</h3>
+        <p>Dedicated staff available via Discord ready to help you at any step.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-ico">🔒</div>
+        <h3>Secure Payments</h3>
+        <p>Multiple trusted payment methods with transparent fees and zero surprises.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand-logo">
+        <img src="image.png" alt="303 Services Logo" onerror="this.style.display='none'"/>
+        <span>303 Services</span>
+      </div>
+      <p>Official reseller with high quality products at affordable prices.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">Home</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://discord.gg/bEgJxy89wU" target="_blank">Privacy Policy</a>
+      <a href="https://discord.gg/bEgJxy89wU" target="_blank">Refund Policy</a>
+      <a href="https://discord.gg/bEgJxy89wU" target="_blank">Terms of Service</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="https://discord.gg/QqcqeN68eW" target="_blank">Discord</a>
+      <a href="https://discord.gg/QqcqeN68eW" target="_blank">Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 303 Services. All rights reserved.</p>
+    <div class="status"><div class="status-dot"></div>All systems operational</div>
+  </div>
+</footer>
+
+<script>
+/* ── PARTICLES ── */
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*W;
+    this.y=Math.random()*H;
+    this.r=Math.random()*1.8+.3;
+    this.vx=(Math.random()-.5)*.4;
+    this.vy=(Math.random()-.5)*.4;
+    this.alpha=Math.random()*.6+.1;
+    this.da=(Math.random()-.5)*.005;
+    this.hue=Math.random()*20;
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;
+    this.alpha+=this.da;
+    if(this.alpha<.05||this.alpha>0.75){this.da*=-1}
+    if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();
+  }
+  draw(){
+    ctx.save();
+    ctx.globalAlpha=this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=`hsl(${348+this.hue},100%,60%)`;
+    ctx.shadowColor=`hsl(${348+this.hue},100%,60%)`;
+    ctx.shadowBlur=8;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+for(let i=0;i<160;i++)particles.push(new Particle());
+
+function drawConnections(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){
+        ctx.save();
+        ctx.globalAlpha=(1-d/100)*0.07;
+        ctx.strokeStyle='#ff1f3d';
+        ctx.lineWidth=.5;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  drawConnections();
+  particles.forEach(p=>{p.update();p.draw()});
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ── FAQ TOGGLE ── */
+function toggleFAQ(el){
+  const item=el.closest('.faq-item');
+  const answer=item.querySelector('.faq-a');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>{
+    i.classList.remove('open');
+    i.querySelector('.faq-a').style.maxHeight='0';
+  });
+  if(!isOpen){
+    item.classList.add('open');
+    answer.style.maxHeight=answer.scrollHeight+40+'px';
+  }
+}
+
+/* ── SEARCH ── */
+function filterFAQ(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const items=document.querySelectorAll('.faq-item');
+  let visible=0;
+  items.forEach(item=>{
+    const text=item.dataset.q;
+    const match=!q||text.includes(q)||item.querySelector('.faq-q-text').textContent.toLowerCase().includes(q);
+    item.style.display=match?'':'none';
+    if(match)visible++;
+  });
+  document.getElementById('noResults').style.display=visible===0?'block':'none';
+}
+
+/* ── CATEGORY FILTER ── */
+let currentCat='all';
+function filterCat(el,cat){
+  document.querySelectorAll('.faq-cat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentCat=cat;
+  const items=document.querySelectorAll('.faq-item');
+  items.forEach(item=>{
+    const show=cat==='all'||item.dataset.cat===cat;
+    item.style.display=show?'':'none';
+  });
+  filterFAQ();
+}
+
+/* ── MOBILE MENU ── */
+function toggleMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+/* ── SCROLL EFFECTS ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:.1});
+
+document.querySelectorAll('.faq-item,.trust-card').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(24px)';
+  el.style.transition='opacity .6s ease, transform .6s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
